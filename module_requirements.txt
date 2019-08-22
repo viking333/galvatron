@@ -1,0 +1,6 @@
+mako
+virustotal-api
+ares
+netifaces
+pexpect
+requests

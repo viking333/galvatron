@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta charset=utf-8 />
+      <title>${report["title"]}</title>
+      <link rel="stylesheet" type="text/css" href="../styles/styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="report-header">
+        <span class="helper">
+          <div class="indent-20">
+            <h1>${report["title"]}</h1>
+          </div>
+        </span>
+      </div>
+      <section class="head-nobreak">
+        <div class="page-header">
+          <h2>Virus Scan Results</h2>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Engine</th>
+              <th>Version</th>
+              <th>Update</th>
+              <th>Virus</th>
+            </tr>
+          </thead>
+          <tbody>
+            % for virus in report["virus_scan"]:
+              <tr>
+                  <td>${virus["engine"]}</td>
+                  <td>${virus["version"]}</td>
+                  <td>${virus["update"]}</td>
+                  <td>${virus["virus"]}</td>
+              </tr>
+            % endfor
+            % if len(report["virus_scan"]) == 0:
+              <tr>
+                <td colspan="4">No Viruses Found</td>
+              </tr>
+            % endif
+          </tbody>
+        </table>
+      <section>
+      <section class="head-break">
+        <div class="page-header">
+          <h2>CVE Search Results</h2>
+        </div>
+        <% i = 0 %>
+        % for cve in report["cve"]:
+          % if i == 0:
+            <article>
+          % else:
+            <article class="head-nobreak">
+          % endif
+          <% i += 1 %>
+            <p><b>Number: </b>${cve["cve_number"]}</p>
+            <p><b>Published: </b>${cve["published"]}</p>
+            <p><b>Description: </b>${cve["description"]}</p>
+            <p><b>CVSS: </b>${cve["cvss"]}</p>
+        </article>
+        % endfor
+        % if len(report["cve"]) == 0:
+          <p><b>No CVE's found</b></p>
+        % endif
+      </section>
+      <section class="head-break">
+        <div class="page-header">
+          <h2>QA Issues</h2>
+        </div>
+        <% i = 0 %>
+        % for qa in report["qa_issue"]:
+          % if i == 0:
+            <article>
+          % else:
+            <article class="head-nobreak">
+          % endif
+          <% i += 1 %>
+            <p><b>Location: </b>${qa["location"]}</p>
+            <p><b>Line Number: </b>${qa["line_number"]}</p>
+            <p><b>Offending Code: </b>${qa["code"]}</p>
+            <p><b>Approver Notes: </b></p>
+            <p>
+              ${qa["note"]}
+            </p>
+        </article>
+        % endfor
+        % if len(report["qa_issue"]) == 0:
+          <p><b>No QA issues found</b></p>
+        % endif
+      </section>
+      <section class="head-break">
+        <div class="page-header">
+          <h2>Sandbox Results</h2>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Description</th>
+              <th>Severity</th>
+            </tr>
+          </thead>
+          <tbody>
+            % for sr in report["sandbox_result"]:
+              <tr>
+                  <td>${sr["description"]}</td>
+                  <td>${sr["severity"]}</td>
+              </tr>
+            % endfor
+            % if len(report["sandbox_result"]) == 0:
+              <tr>
+                <td colspan="2">No Sandbox Results Found</td>
+              </tr>
+            % endif
+          </tbody>
+        </table>
+      </section>
+      <section class="head-break">
+        <div class="page-header">
+          <h2>HTTP Traffic</h2>
+        </div>
+          % for h in report["http_data"]:
+            <div class="row">
+              <pre>
+${h["method"]} ${h["url"]}
+
+${h["data"]}
+              </pre>
+            </div>
+          % endfor
+          % if len(report["http_data"]) == 0:
+            <div>
+              No HTTP Data Found
+            </div>
+          % endif
+      </section>
+    </div>
+  </body>
+  <script>
+    window.print();
+  </script>
+</html>
