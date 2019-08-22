@@ -51,12 +51,12 @@ This probably needs renaming but it does the following
    out and store in DB. It will also run a Attack Surface Analyzer scan and
    compare with a scan called baseline and process the results.
    
-*VM Requirements*
+_VM Requirements_
 - Needs to be on a host only network (no nat interfaces) 
 - have a \galvatron folder in root of C
 - Have Atack Surface Analyzer in the \gavatron (rename folder to asa and rename
   ASALaunch.bat to asa.bat)
-- Run a scan `cd \galvatron\asa && .\asa.bat collect --runid baaseline --all`
+- Run a scan `cd \galvatron\asa && .\asa.bat collect --runid baseline --all`
 - Snapshot the machine after scan is complete
 
 A regular windows install will create lots of noise so you may want to turn this
