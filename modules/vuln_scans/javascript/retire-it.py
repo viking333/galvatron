@@ -3,17 +3,19 @@ from galvatron_lib.core.framework import FrameworkException, Colors
 import subprocess
 import json
 import os
+import distutils.spawn
 
 class Module(BaseModule):
     meta = {
             "name": "Retire.js Scanner",
             "author": "James Hall",
-            "descrription": "This plugin uses Retire.js to scan for CVEs and known vulnerabilities in JavaScript libraries",
+            "descrription": "This plugin uses Retire.js to scan for CVEs and known vulnerabilities in JavaScript libraries; UPDATED 2019 by Lukasz Malendowicz",
             "query": "SELECT DISTINCT extracted_location, product_name, version FROM targets WHERE location IS NOT NULL"
     }
 
     def module_pre(self):
-	if os.path.isfile("/home/spikey/src/node-v6.10.2-linux-x64/bin/retire") == False:
+        self.retire_path = distutils.spawn.find_executable('retire')
+        if not self.retire_path:
             raise FrameworkException('Retire.js is not installed.')
 
     def module_run(self, params):
@@ -21,11 +23,11 @@ class Module(BaseModule):
                         try:
                                 extracted_location, product_name, version = i
                                 self.output("Scanning: %s" % extracted_location)
-                                retirejs_check = subprocess.Popen(['retire', '--path', extracted_location, '--outputformat', 'json'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                                retirejs_check = subprocess.Popen([self.retire_path, '--path', extracted_location, '--outputformat', 'json'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                                 retirejs_output, retirejs_error = retirejs_check.communicate()
                                 parsed_json = json.loads(retirejs_error)
 
-                                for item in parsed_json:
+                                for item in parsed_json['data']:
                                         issue_links = []
 
                                         for result in item['results']:
