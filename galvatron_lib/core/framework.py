@@ -394,17 +394,17 @@ class Framework(cmd.Cmd):
         return rowcount
 
     def download_extension(self, extension_id, browser_version="49.0"):
-        url = "https://clients2.google.com/service/update2/crx?response=redirect&prodversion={version}&x=id%3D{extension_id}%26installsource%3Dondemand%26uc".format(version=browser_version, extension_id=extension_id)
+        url = "https://clients2.google.com/service/update2/crx?response=redirect&acceptformat=crx3&prodversion={version}&x=id%3D{extension_id}%26installsource%3Dondemand%26uc".format(version=browser_version, extension_id=extension_id)
         dest_location = os.path.join(os.sep, "tmp", "{}.zip".format(extension_id))
         print(dest_location)
         try:
             urllib.urlretrieve(url, dest_location)
         except Exception as ex:
+            self.output(ex)
             return None
 
         return dest_location
         
-
     def add_targets(self, location, vendor=None, product_name=None, version=None, extracted_location=None, sandbox_id=None, mute=False):
         if location.startswith("chrome://"):
             extension_id = self.get_extension_id(location)
