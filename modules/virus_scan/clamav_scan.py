@@ -3,6 +3,7 @@ from galvatron_lib.core.framework import FrameworkException, Colors
 import os
 import subprocess
 import re
+import distutils.spawn
 
 class Module(BaseModule):
     meta={
@@ -13,7 +14,8 @@ class Module(BaseModule):
             }
 
     def module_pre(self):
-        if os.path.isfile("/usr/bin/clamscan") == False:
+        self.clam_path = distutils.spawn.find_executable('clamscan')
+        if not self.clam_path:
             raise FrameworkException('Clam is not installed. ')
 
     def module_run(self, params):
@@ -22,7 +24,7 @@ class Module(BaseModule):
             location, product_name, version = i
             self.output("Scanning: %s" % location)
 
-            os.system("clamscan " + location + " -l clamav.log 2>&1 >/dev/null")
+            os.system(self.clam_path + " " + location + " -l clamav.log 2>&1 >/dev/null")
             content = open("clamav.log").read()
             p = re.compile('(?P<file>\S+):\s(?P<virus_description>\S+)\sFOUND')
 
