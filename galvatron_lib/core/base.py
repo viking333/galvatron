@@ -227,7 +227,7 @@ class Recon(framework.Framework):
         return snapshots
 
     def _create_db(self):
-        self.query('CREATE TABLE IF NOT EXISTS targets (location TEXT, vendor TEXT, product_name TEXT, version TEXT, extracted_location TEXT, sandbox_id TEXT, module TEXT)')
+        self.query('CREATE TABLE IF NOT EXISTS targets (location TEXT, vendor TEXT, product_name TEXT, version TEXT, extracted_location TEXT, sandbox_id TEXT, original_location TEXT, module TEXT)')
         self.query('CREATE TABLE IF NOT EXISTS cve (product TEXT, version TEXT, cve_number TEXT, description TEXT, published TEXT, cvss TEXT, module TEXT)')
         self.query('CREATE TABLE IF NOT EXISTS virus_scan (product TEXT, version TEXT, engine TEXT, engine_version TEXT, update_version TEXT, description TEXT, module TEXT)')
         self.query('CREATE TABLE IF NOT EXISTS qa_issue (product TEXT, version TEXT, file_name TEXT, location TEXT, line_number TEXT, description TEXT, note TEXT, module TEXT)')

@@ -17,6 +17,7 @@ import zipfile
 import tarfile
 import base64
 import requests, urllib, time
+import location_handlers
 
 # framework libs
 from galvatron_lib.utils.requests import Request
@@ -393,38 +394,15 @@ class Framework(cmd.Cmd):
         if not mute: self._display(data, rowcount, '[domain] %s', data.keys())
         return rowcount
 
-    def download_extension(self, extension_id, browser_version="49.0"):
-        url = "https://clients2.google.com/service/update2/crx?response=redirect&acceptformat=crx3&prodversion={version}&x=id%3D{extension_id}%26installsource%3Dondemand%26uc".format(version=browser_version, extension_id=extension_id)
-        dest_location = os.path.join(os.sep, "tmp", "{}.zip".format(extension_id))
-        print(dest_location)
-        try:
-            urllib.urlretrieve(url, dest_location)
-        except Exception as ex:
-            self.output(ex)
-            return None
-
-        return dest_location
-        
-    def add_targets(self, location, vendor=None, product_name=None, version=None, extracted_location=None, sandbox_id=None, mute=False):
-        if location.startswith("chrome://"):
-            extension_id = self.get_extension_id(location)
-            if extension_id:
-                self.output("Downloading chrome extension {}".format(extension_id))
-                location = self.download_extension(extension_id)
-            else:
-                self.error("Chrome extension not found")                
-                return 0
-
-        if not location:
-            self.error("No location provided")
-            return 0
-
+    def add_targets(self, location, vendor=None, product_name=None, version=None, extracted_location=None, sandbox_id=None, original_location=None, mute=False):
         output_folder = os.path.join(self.workspace, os.path.basename(location))
         extracted_location = ""
-      
-        if ".git" in location:
-            os.system("git clone {} {}/repo".format(location, self.workspace))
-            extracted_location = "{}/repo".format(self.workspace)
+        handler = location_handlers.get_handler(location)
+        original_location = location
+        location, extracted_location = handler.handle(self, original_location)
+
+        if location is None and extracted_location is None:
+            return 0
 
         if self.is_archive(location) and self.extract_archive(location, output_folder):
             extracted_location = output_folder
@@ -435,25 +413,13 @@ class Framework(cmd.Cmd):
             product_name = self.to_unicode(product_name),
             version = self.to_unicode(version),
             extracted_location = self.to_unicode(extracted_location),
-            sandbox_id = sandbox_id
+            sandbox_id = sandbox_id,
+            original_location = self.to_unicode(original_location)
         )
 
         rowcount = self.insert('targets', data.copy(), data.keys())
         if not mute: self._display(data, rowcount, '[target] %s', data.keys())
         return rowcount
-
-    def get_extension_id(self, arg1):
-        package = "\"{}\"".format(arg1.replace("chrome://", ""))
-        package = urllib.quote_plus(package)
-
-        url = "https://chrome.google.com/webstore/ajax/item?hl=en&gl=GB&pv=20181009&count=2&searchTerm={}".format(package)
-        resp = requests.post(url)
-        data = json.loads(resp.text.replace(")]}'\n\n", ""))
-        items = [x[0] for x in data[1][1] if x[1] == arg1.replace("chrome://", "")]
-        if len(items):
-            return items[0]
-
-        return None
 
     def is_archive(self, file_name):
         try:
