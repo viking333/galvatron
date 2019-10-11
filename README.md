@@ -50,7 +50,12 @@ This probably needs renaming but it does the following
 7. When you're done (Ctrl-C out of the proxy) and it will pull all the HTTP data
    out and store in DB. It will also run a Attack Surface Analyzer scan and
    compare with a scan called baseline and process the results.
-   
+
+_Module Requirements_
+- Install `libxslt-dev`, `libxml2-dev` and `dnsmasq` via apt
+- Install mimtproxy using pip3
+- As dnsmasq uses the same port as local DNS stub listener, we need to disable it using `systemctl stop systemd-resolved`
+
 _VM Requirements_
 - Needs to be on a host only network (no nat interfaces) 
 - have a \galvatron folder in root of C
