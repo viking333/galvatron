@@ -6,7 +6,7 @@ if __name__ == "__main__":
     if len(sys.argv) < 2:
         print ("[usage] python3 get-chrome-extensions.py <list-of-extensions.txt>")
         exit()
-    
+
     list_of_extensions = sys.argv[1]
     if path.exists(list_of_extensions):
         try:
@@ -29,7 +29,7 @@ if __name__ == "__main__":
             data = json.loads(resp.text.replace(")]}'\n\n", ""))
             items = [x[0] for x in data[1][1] if x[1] == package_name]
             if len(items):
-                rc_script.write("add targets chrome://"+package_name+"~"+package_name+"~"+package_name+"~~~\n")
+                rc_script.write("add targets chrome://"+package_name+"~"+package_name+"~"+package_name+"~~~~\n")
             else:
                 removed_list.write(package_name+"\n")
     else:

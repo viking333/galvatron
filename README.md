@@ -53,7 +53,7 @@ This probably needs renaming but it does the following
 
 _Module Requirements_
 - Install `libxslt-dev`, `libxml2-dev` and `dnsmasq` via apt
-- Install mimtproxy using pip3
+- Install mitmproxy using pip3
 - As dnsmasq uses the same port as local DNS stub listener, we need to disable it using `systemctl stop systemd-resolved`
 
 _VM Requirements_
